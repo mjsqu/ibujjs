@@ -17,7 +17,7 @@ import argparse
 from bs4 import BeautifulSoup
 from datetime import datetime
 from datetime import timedelta
-from sportstg import urlq,clubteams,gamestoday
+from sportstg import urlq,clubteams,gamestoday,dcthtml
 parser = argparse.ArgumentParser(description='Options Videprinter date')
 parser.add_argument('-d','--date')
 args = vars(parser.parse_args())
@@ -116,59 +116,7 @@ if not (os.path.isfile(todayjson)):
 #   - Add time
 #   - Sort by time
 #   - Remove repeated code by building an object and joining tags
-html = ''
-
-# dict layout for html
-for i,frow in enumerate(today):
-    # Each element of today contains
-    # 0 - IBU team name
-    # 1 - competitionID
-    # 2 - dict of fixtures
-    ibuteam = frow[0]
-    compid = frow[1]
-    df = frow[2]
-    html += '<div class="lge" id="h'+str(i)+'">'
-    try:
-      html += compdict[compid]
-    except:
-      html += 'Unknown Competition'
-    html += '</div>'
-    # Competition header complete
-    # Table header start
-    html += '<table id="rn'+str(i)+'">'
-    html += '<tr>'
-    #html += '<th class="comp"/>'
-    html += '<th class="venue"/>'
-    html += '<th class="time"/>'
-    html += '<th class="team">HOME</th>'
-    html += '<th class="score"></th>'
-    html += '<th class="divider"></th>'
-    html += '<th class="score"></th>'
-    html += '<th class="team">AWAY</th>'
-    html += '</tr>'
-    # Table header complete
-    for dfixs in df: 
-        html += '<tr>'
-        venue = dfixs['VENUE/COURT']
-        fixtime = dfixs['TIME']
-        hometeam = dfixs['HOME TEAM']
-        awayteam = dfixs['AWAY TEAM']
-        homescore = dfixs['HOMESCORE']
-        awayscore = dfixs['AWAYSCORE']
-        if ibuteam == hometeam:
-            hometeam = '<b>'+hometeam+'</b>'
-        if ibuteam == awayteam:
-            awayteam = '<b>' + awayteam + '</b>'
-        #html += '<td class="comp">' + compid + '</td>'
-        html += '<td class="venue">' + venue + '</td>'
-        html += '<td class="time">' + fixtime + '</td>'
-        html += '<td class="team">' + hometeam + '</td>'
-        html += '<td class="score">' + homescore + '</td>'
-        html += '<td class="divider">' + ' - ' + '</td>'
-        html += '<td class="score">' + awayscore + '</td>'
-        html += '<td class="team">' + awayteam + '</td>'
-        html += '</tr>\n'
-    html += '</table>'
+html = dcthtml(today)
 
 with open(htmlout,'w') as f:
     f.write(html)
