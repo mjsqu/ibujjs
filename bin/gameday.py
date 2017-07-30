@@ -6,8 +6,6 @@
 # Improvements
 #   - Get junior team names/IDs and set those to be displayed for the morning
 #   - Display senior fixtures in the afternoons
-#   - Display drinks prices
-#   - Display coffee menu
 #
 import requests
 import json
@@ -27,8 +25,9 @@ if d_arg is not None:
     print 'Running '+d_arg
 
 # Capture team and competition data
-clubfile = '/home/pi/football/data/clubteams.json'
-compfile = '/home/pi/football/data/compnames.json'
+datadir = os.path.join('..','data')
+clubfile = os.path.join(datadir,'clubteams.json')
+compfile = os.path.join(datadir,'compnames.json')
 
 if not(os.path.isfile(compfile)):
     print 'The competition names are not ready'
@@ -64,8 +63,9 @@ if d_arg is not None:
     print filestr
 
 # if a json file with today's leagues in it does not exist, then run the search
-todayjson = '/home/pi/football/data/ibucomps_' + filestr + '.json'
-htmlout = '/var/www/html/res.html'
+todayjson = os.path.join(datadir,'ibucomps_' + filestr + '.json')
+htmloutd = {'nt':r'C:\inetpub\wwwroot','posix':r'/var/www/html'}
+htmlout = os.path.join(htmloutd[os.name],'res.html')
 
 if d_arg is not None:
     print todayjson
