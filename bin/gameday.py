@@ -10,7 +10,7 @@
 import requests
 import json
 import urlparse
-import os
+import os, sys
 import argparse
 from bs4 import BeautifulSoup
 from datetime import datetime
@@ -25,7 +25,7 @@ if d_arg is not None:
     print 'Running '+d_arg
 
 # Capture team and competition data
-datadir = os.path.join('..','data')
+datadir = os.path.join(sys.path[0],'..','data')
 clubfile = os.path.join(datadir,'clubteams.json')
 compfile = os.path.join(datadir,'compnames.json')
 
