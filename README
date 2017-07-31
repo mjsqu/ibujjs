@@ -10,7 +10,7 @@ Base it entirely off the rpt_fixture pages as they are the quickest to load:
 
 rpt_fixture.cgi?client=1-4205-0-...-0
 
-Input ordered dict - compID, competition name, IBU teams - Date, W/C/M
+Input dict - compID, competition name, IBU teams - Date, W/C/M
 
 e.g.
 {'458386':{'sortorder':1,'compname':'Capital 5 - 2nd Round','ibuteams':["IBU JJ''s"]}}
@@ -30,6 +30,6 @@ Capital/Women/Master's - leagues involving Island Bay
 Saturday
 Sunday
 
+Go through all recorded ibuteams files and pull out competition IDs, look up the values in the complist file or webpage and manually select the competitions of interest
 
-Temperature sensor
-
+Using the selected competitions, run a script to build the dict above. JJs first.
