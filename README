@@ -1,1 +1,28 @@
-This is a repository for version control over the Island Bay United scoreboard
+last games. Last game per team.
+table
+today's games, if there were any
+
+One-off data extract - NOW - store in a database
+
+Web scrape the scores and update the database. If a score disappears, do not update the database with removal of the score, wait until it is corrected
+
+Base it entirely off the rpt_fixture pages as they are the quickest to loadY
+
+Input ordered dict - compID, competition name, IBU teams - Date, W/C/M
+
+e.g.
+{'458386':{'sortorder':1,'compname':'Capital 5 - 2nd Round','ibuteams':["IBU JJ''s"]}}
+
+
+
+Pages:
+On at Wakefield Saturday (all games at Wakefield Park)
+On at Wakefield Sunday
+
+Capital/Women/Master's - leagues involving Island Bay
+Saturday
+Sunday
+
+
+Temperature sensor
+
