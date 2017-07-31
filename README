@@ -6,14 +6,21 @@ One-off data extract - NOW - store in a database
 
 Web scrape the scores and update the database. If a score disappears, do not update the database with removal of the score, wait until it is corrected
 
-Base it entirely off the rpt_fixture pages as they are the quickest to loadY
+Base it entirely off the rpt_fixture pages as they are the quickest to load:
+
+rpt_fixture.cgi?client=1-4205-0-...-0
 
 Input ordered dict - compID, competition name, IBU teams - Date, W/C/M
 
 e.g.
 {'458386':{'sortorder':1,'compname':'Capital 5 - 2nd Round','ibuteams':["IBU JJ''s"]}}
 
+Wakefield.json:
 
+Get all the wakefield venue codes and use the following pages to get the venue data for the weekend:
+comp_info.cgi?action=VENUE&venueid=...&client=1-4205-0-0-0
+
+{'18730675':'Wakefield 2'}
 
 Pages:
 On at Wakefield Saturday (all games at Wakefield Park)
