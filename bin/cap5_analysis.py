@@ -60,4 +60,42 @@ for r in resdict:
     else:
         fxt.append(r)
 
+# Simplify the data - give teams and fixtures integer identifiers
+tl = list(teams)
+
+flx = []
+for f in fxt:
+    d = {}
+    d[0] = tl.index(f['HOME TEAM'])
+    d[1] = tl.index(f['AWAY TEAM'])
+    flx.append(d)
+
+tbx = {}
+for k,v in tdx.items():
+    tbx[tl.index(k)] = v['Pts']
+
+# flx now contains fixtures list of {0:,1:} dicts, 0 = home, 1 = away
+# tbx contains current table {team_index: points}
+# Generate the list of dicts that represent possible final tables
+maxmin = {k:set(range(1+len([kx for kx,vx in tbx.items() if v < vx]),11-len([kx for kx,vx in tbx.items() if v > vx]))) for k,v in tbx.items()}
+
+i = 0
+
+from itertools import product
+for outcome in product(range(3),repeat=len(flx)):
+    nt = dict(tbx)
+    for n,f in enumerate(outcome):
+        # flx[n] is assigned outcome f, which maps to a points increase for...
+        if f == 2:
+            nt[flx[n][0]] += 1
+            nt[flx[n][1]] += 1
+        else:
+            nt[flx[n][f]] += 3
+    # This produces a dict of team:(maxrank,minrank) after set of outcomes
+    for k,v in nt.items():
+        # Update maxmin by unioning the current positions with the ones from nt
+        newpos = set(range(1+len([kx for kx,vx in nt.items() if v < vx]),11-len([kx for kx,vx in nt.items() if v > vx])))
+        oldpos = maxmin[k]
+        maxmin.update({k:newpos|oldpos})
+
 # 'play out all remaining fixtures' - (number of fixtures)^3 (Home Win, Away Win, Draw)
