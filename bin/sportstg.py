@@ -163,3 +163,101 @@ def dcthtml(today):
     html += '</table>'
   return html
 
+# Function that takes venueid and returns a dict:
+# {'venueid':'','venuename':'',games:{'date':'','compname':'','HOME':'','AWAY':''}}
+
+# Function that takes compid and returns a dict:
+# { 'compid':'','compname':'','fixtures':[{'lastres':0/1,'resfix':'R/F','HOME':'','AWAY':''},'teams':set([])]
+# Uses requests
+def allgames(compid):
+    from datetime import datetime
+    url='http://websites.sportstg.com/rpt_fixture.cgi'
+    params = {'client':'1-4205-0-'+compid+'-0'}
+    r = requests.get(url,params=params)
+    # Fixture report column names
+    headers = ['ROUND', 'DATE', 'TIME', 'VENUE/COURT', 'HOMESCORE', 'HOME TEAM', 'vs', 'AWAY TEAM', 'AWAYSCORE']
+    # Parse using BS
+    s = BeautifulSoup(r.text, 'lxml')
+    
+    # Competition name is always in the first H3 tag
+    compname = s.find('h3').text
+    
+    # The club team rows are all in div elements with class = club-team row
+    ct = s.find('table',attrs={'class':'tableClass table'})
+
+    results = [{headers[i]: cell.text.replace(u'\xa0','').strip() for i, cell in enumerate(row.find_all('td')[0:len(headers)])} for row in ct.find_all('tr')]
+    resdict = [x for x in results[2:len(results)]]
+    
+    todayfix = []
+   
+    for r in resdict:
+        r.update({'DATETIME':datetime.strptime(r['DATE'][:8]+r['TIME'],'%d/%m/%y%H:%M')})
+        if r['DATETIME'].strftime('%d%m%Y') == datetime.now().strftime('%d%m%Y'):
+            todayfix.append(r)
+        r.update({'RF':'F'})
+        if r['HOMESCORE'] <> '':
+            r.update({'RF':'R'})
+    
+    teams = []
+    for r in resdict:
+        teams.append(r['HOME TEAM'])
+        teams.append(r['AWAY TEAM'])
+    
+    teams = set(teams)
+        
+    rt = {'compname':compname,'teams':teams,'fixtures':resdict,'table':lgetable(resdict),'today':todayfix}
+
+    return rt
+
+def lgetable(resdict):
+    # Initialise team, p, w, d, l, f, a, pts
+    tableheads = ['P','W','D','L','F','A','GD','Pts']
+    tdx = {}
+    teams = []
+    for r in resdict:
+        teams.append(r['HOME TEAM'])
+        teams.append(r['AWAY TEAM'])
+    
+    teams = set(teams)
+    for t in teams:
+        td = {}
+        for th in tableheads:
+            td[th] = 0
+        tdx[t] = td
+
+    fxt = []
+    for r in resdict:
+        if r['HOMESCORE'] <> '':
+            hsc = int(r['HOMESCORE'])
+            asc = int(r['AWAYSCORE'])
+            tdx[r['HOME TEAM']]['F'] += hsc
+            tdx[r['HOME TEAM']]['A'] += asc
+            tdx[r['HOME TEAM']]['GD'] += hsc - asc
+            tdx[r['AWAY TEAM']]['F'] += asc
+            tdx[r['AWAY TEAM']]['A'] += hsc
+            tdx[r['AWAY TEAM']]['GD'] += asc - hsc
+            tdx[r['HOME TEAM']]['P'] += 1
+            tdx[r['AWAY TEAM']]['P'] += 1
+            if hsc > asc:
+                tdx[r['HOME TEAM']]['W'] += 1
+                tdx[r['AWAY TEAM']]['L'] += 1
+                tdx[r['HOME TEAM']]['Pts'] += 3
+            elif hsc < asc:
+                tdx[r['HOME TEAM']]['L'] += 1
+                tdx[r['AWAY TEAM']]['W'] += 1
+                tdx[r['AWAY TEAM']]['Pts'] += 3
+            else:
+                tdx[r['HOME TEAM']]['D'] += 1
+                tdx[r['AWAY TEAM']]['D'] += 1
+                tdx[r['HOME TEAM']]['Pts'] += 1
+                tdx[r['AWAY TEAM']]['Pts'] += 1
+        else:
+            fxt.append(r)
+    return tdx
+
+# Function that takes a 'fixtures' list and produces 'table':
+# [{'teamname':'',PWDLFA_GD_Pts}]
+# Offline, no use of requests
+
+# Function returning a string from 'table' that is an reverse ordered HTML representation by points total
+# Function returning a string from 'fix' that is HTML
